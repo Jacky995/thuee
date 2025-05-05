@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Redirecting via POST...</title>
+  <script>
+    async function redirectFromRagic() {
+      try {
+        const response = await fetch(
+          "https://ap12.ragic.com/89793238/nfc3/4?api&APIKey=UGQ4cGFmNjg2R0J2TXNSMXpZdVVvRTdvU1ArWHBHeEVEUjFIT2p4aFpZZEt3eUd6RnZTV0dlN0VBMFBkT0hJUw==",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            // 如果 API 支援在 body 帶過濾條件，你可以在這裡塞 JSON
+            // body: JSON.stringify({ filterField: "1000110", filterValue: "101" })
+            body: JSON.stringify({})
+          }
+        );
+
+        // 一樣轉成 JSON
+        const data = await response.json();
+
+        // 找到欄位 1000110 === "101" 的那列，並取出欄位 456
+        let targetUrl = null;
+        for (const id in data) {
+          const row = data[id];
+          if (row["1000110"] && row["1000110"].trim() === "101") {
+            targetUrl = row["456"];
+            break;
+          }
+        }
+
+        if (targetUrl) {
+          window.location.href = targetUrl;
+        } else {
+          document.body.innerText = "未找到符合條件的轉址網址，請聯絡管理員。";
+        }
+      } catch (err) {
+        document.body.innerText = "發生錯誤：" + err;
+      }
+    }
+
+    window.onload = redirectFromRagic;
+  </script>
+</head>
+<body>
+  正在以 POST 方式取得轉址資訊，請稍候...
+</body>
+</html>
